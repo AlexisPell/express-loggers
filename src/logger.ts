@@ -1,20 +1,19 @@
-import cls from 'cls-hooked';
 import pino from 'pino';
-import { APP_NAMESPACE, LOGGER } from './constants';
+import { asyncLocalStorage } from './asyncStorage';
 
 const logger = pino({
   prettyPrint: true,
 });
 
 export const myLogger = {
-  init: (traceId: string) => {
-    const clsNamespace = cls.getNamespace(String(APP_NAMESPACE));
+  init: (store: Map<any, any>, traceId: string) => {
+    // const store = asyncLocalStorage.getStore() as Map<any, any>;
     const childLogger = logger.child({ traceId });
-    clsNamespace?.set(String(LOGGER), childLogger);
+    store.set('logger', childLogger);
   },
   get: () => {
-    const clsNamespace = cls.getNamespace(String(APP_NAMESPACE));
-    const childLogger: pino.Logger = clsNamespace?.get(String(LOGGER));
+    const store = asyncLocalStorage.getStore() as Map<any, any>;
+    const childLogger = store?.get('logger');
     return childLogger || logger;
   },
 };

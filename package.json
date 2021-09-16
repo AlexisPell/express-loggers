@@ -12,7 +12,6 @@
   "dependencies": {
     "@types/cls-hooked": "^4.3.3",
     "@types/uuid": "^8.3.1",
-    "cls-hooked": "^4.2.2",
     "express": "^4.17.1",
     "pino": "^6.13.2",
     "pino-pretty": "^7.0.0",
