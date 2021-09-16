@@ -1,27 +1,23 @@
 import { myLogger } from './logger';
 import express from 'express';
 import { logic } from './logic';
-import pino from 'pino';
 import { v4 } from 'uuid';
-import cls from 'cls-hooked';
-import { APP_NAMESPACE } from './constants';
+import { asyncLocalStorage } from './asyncStorage';
 
 const main = () => {
   const app = express();
 
-  const clsNamespace = cls.createNamespace(String(APP_NAMESPACE));
-
-  // Middleware
+  // Logger Setup Middleware
   app.use((req, res, next) => {
-    const traceId: string = v4();
-    clsNamespace.bind(req as any);
-    clsNamespace.bind(req as any);
-    clsNamespace.run(() => {
-      myLogger.init(traceId);
+    const store = new Map();
+    const traceId: string = v4().split('').slice(0, 13).join('');
+    asyncLocalStorage.run(store, () => {
+      myLogger.init(store, traceId);
       next();
     });
   });
 
+  // Logger Usage Middleware
   app.use((req, res, next) => {
     myLogger.get().info(`Logger middleware`);
     const traceId = req.headers['x-request-id'] || v4();
